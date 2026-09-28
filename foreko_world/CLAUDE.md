@@ -48,6 +48,7 @@ foreko/
   （`-- --bundled-fonts` と `--rendering-method gl_compatibility` でデスクトップでも Web 相当を確認できる）
 - スマートボールの台の配置: 開発用プロジェクトの調整モード（F2）で保存すると res://minigames/smartball/board_layout.json（台の設計）に書かれ、
   本体にも反映される。本体で保存すると user://smartball_layout.json（プレイヤーの配置、設計より優先）
+- Web 版の UI 文字は project.godot の gui/theme/custom_font（同梱 Bold）で日本語化している。root.theme の default_font だけでは Web で □ に化けた
 - Web 書き出しプリセット（export_presets.cfg）は include_filter に *.json を入れて board_layout.json を含めている
 - 開発用の --shot 実行中は GameManager.save_enabled=false で本物のセーブを書かない
 - ルートの foreko.glb は元データ（インポート対象外にしたい場合は .import を skip に）
