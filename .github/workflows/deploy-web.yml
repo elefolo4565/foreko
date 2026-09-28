@@ -20,9 +20,9 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # ubuntu-latest の自動切り替えで壊れないよう固定
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # ローカルではジャンクションで参照している共有部品とミニゲームを、本体にコピーして組み込む
       - name: ミニゲームと共有部品を本体に組み込む
@@ -33,7 +33,7 @@ jobs:
 
       - name: Godot をキャッシュから復元
         id: cache-godot
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/godot
           key: godot-${{ env.GODOT_VERSION }}-web
@@ -67,16 +67,16 @@ jobs:
           touch build/web/.nojekyll
           ls -l build/web
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: build/web
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # ubuntu-latest の自動切り替えで壊れないよう固定
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

@@ -1,0 +1,9 @@
+# GitHub Actions のアクションに新しい版が出たら、更新のプルリクエストを自動で作る
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "ci"
