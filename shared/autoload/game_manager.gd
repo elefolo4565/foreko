@@ -37,7 +37,7 @@ var font_mincho: Font
 
 
 func _ready() -> void:
-	font_ui = _make_font(["BIZ UDGothic", "Yu Gothic UI", "Yu Gothic", "Meiryo"], 700, "Medium")
+	font_ui = _make_font(["BIZ UDGothic", "Yu Gothic UI", "Yu Gothic", "Meiryo"], 700, "Bold")
 	font_sign = _make_font(["HGGyoshotai", "HG行書体", "HGSeikaishotaiPRO", "Yu Mincho", "MS Mincho"], 400, "Bold")
 	font_pop = _make_font(["HGSoeiKakupoptai", "HG創英角ﾎﾟｯﾌﾟ体", "HG創英角ポップ体", "BIZ UDGothic", "Yu Gothic"], 700, "Black")
 	font_mincho = _make_font(["HGMinchoE", "HG明朝E", "Yu Mincho", "MS Mincho"], 700, "Bold")
