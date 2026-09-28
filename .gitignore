@@ -1,0 +1,13 @@
+# Godot のキャッシュ
+.godot/
+
+# Web 書き出し結果
+/build/
+
+# 共有部品・ミニゲームへのジャンクション（実体はリポジトリ直下。tools/setup_links.ps1 で作る）
+/foreko_world/shared
+/foreko_world/minigames/
+/foreko_smartball/shared
+/foreko_smartball/minigames/
+/foreko_pachinko/shared
+/foreko_pachinko/minigames/

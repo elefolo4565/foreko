@@ -1,0 +1,82 @@
+# main に push されたら foreko_world を Web 向けに書き出して GitHub Pages に公開する
+name: Web版を公開
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: "4.7.2"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # ローカルではジャンクションで参照している共有部品とミニゲームを、本体にコピーして組み込む
+      - name: ミニゲームと共有部品を本体に組み込む
+        run: |
+          cp -r shared foreko_world/shared
+          mkdir -p foreko_world/minigames
+          cp -r minigames/smartball minigames/pachinko foreko_world/minigames/
+
+      - name: Godot をキャッシュから復元
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}-web
+
+      # テンプレート一式は約1.3GBあるので、初回だけ取得して Web 用のものだけを残す
+      - name: Godot と Web 用書き出しテンプレートを取得
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot/templates && cd ~/godot
+          base=https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable
+          wget -q "$base/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q "Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" godot
+          wget -q "$base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          unzip -q -j "Godot_v${GODOT_VERSION}-stable_export_templates.tpz" 'templates/web*' 'templates/version.txt' -d templates
+          rm -f *.zip *.tpz
+          ls -l templates
+
+      - name: 書き出しテンプレートを配置
+        run: |
+          dest=~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          mkdir -p "$dest"
+          cp ~/godot/templates/* "$dest/"
+
+      - name: Web 用に書き出し
+        run: |
+          mkdir -p build/web
+          ~/godot/godot --headless --path foreko_world --import || true
+          ~/godot/godot --headless --path foreko_world --export-release "Web" "$GITHUB_WORKSPACE/build/web/index.html"
+          test -f build/web/index.pck
+          touch build/web/.nojekyll
+          ls -l build/web
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
